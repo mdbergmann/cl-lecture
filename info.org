@@ -1,0 +1,70 @@
+* Intro
+** how did I come to Common Lisp
+   Begin of 2019. Was looking for something other than Scala (JVM), oer the JVM altogether.
+   Took a look at Clojure. But Clojure was again in the JVM. I wanted something native,
+   or at least some other runtime.
+   So I found Common Lisp and didn't regret it.
+   
+** brief history
+   First drafts of Common Lisp appeared 1984. While mostly a successor of Maclisp it tried to
+   unify and standardize Maclisp and the various other successors of Maclisp.
+   In 1994 Common Lisp was an ANSI standard.
+   
+** age advantages
+   Since then the standard hasn't changed. That can of course be seen as a bad thing.
+   But actually I believe it is a good thing. It is even today surprisingly 'modern' and has many features of todays languages, partially even more features than 'modern' languages.
+   Common Lisp is a quite large and complex package. After this long time there are of course some dusty corners. But all in all it is still very attractive and has an active community.
+   Because the standard didn't change since 1994 any code written since then should still be compile and runnable on modern compilers and runtime implementarions, where there are still a few (see below).
+   
+* Basics
+  Let me run through some of the basic features of Common Lisp. Common Lisp also has some unique features that we will be talking about later.
+  
+** function arguments
+   Function arguments are nothing special. Every language knows this. And yet, Common Lisp provides a very sophisticated set of features to structure function parameters.
+
+   
+   
+** lambdas
+** macros
+** packages
+** symbols
+** REPL interactivity
+*** quicklisp
+*** runtime changes
+
+* Runtimes/compilers (CCL, SBCL, ECL, ABCL | LispWorks, Allegro)
+
+* Debugging
+** REPL driven development
+** trace, …
+
+* Error handling
+** unwind-protect
+** Conditions
+** handler-case
+** Restarts
+*** handler-bind
+
+* Image based
+** manipulating data in image
+** image snapshot
+** load from image
+
+* Types
+** everything has a type
+** create new types
+** check for types
+*** checktype
+*** typecase
+** SBCL compile type checking
+
+* Multi dispatch
+
+* CLOS
+
+* Functional programming
+** FSet
+
+* Web
+** cl-who / spinneret
+** parenscript
