@@ -1,9 +1,12 @@
 * Intro
+  This article should be a brief introduction to Common Lisp. Brief, because Common Lisp is a rather large and complex system. It has many features. I will try to concentrate on the basics and some exceptional features that you likely find nowhere else.
+  
 ** how did I come to Common Lisp
-   Begin of 2019. Was looking for something other than Scala (JVM), oer the JVM altogether.
-   Took a look at Clojure. But Clojure was again in the JVM. I wanted something native,
-   or at least some other runtime.
-   So I found Common Lisp and didn't regret it.
+   I have been working with various languages and runtimes since the start oif my career 22 years ago.
+   Beginning of 2019 I wanted to fin something else to closely look into that is not JVM based (which I'm mostly been working with since close to 20 years starting with Java 1.1).
+   For some reason, which I can't recall, I haven't been really introduced to Lisps, ever. I also can't recall why 2019 I thought that I should take a look at Lisps.
+   So I took a look at Clojure first. Clojure is a great language but it was again on the JVM. I wanted something native, or at least some other runtime.
+   After some excursions to Erlang, Elixir and Lisp Flavoured Erlang I finally found Common Lisp and didn't regret it.
    
 ** brief history
    First drafts of Common Lisp appeared 1984. While mostly a successor of Maclisp it tried to
@@ -14,15 +17,61 @@
    Since then the standard hasn't changed. That can of course be seen as a bad thing.
    But actually I believe it is a good thing. It is even today surprisingly 'modern' and has many features of todays languages, partially even more features than 'modern' languages.
    Common Lisp is a quite large and complex package. After this long time there are of course some dusty corners. But all in all it is still very attractive and has an active community.
-   Because the standard didn't change since 1994 any code written since then should still be compile and runnable on modern compilers and runtime implementarions, where there are still a few (see below).
+   Because the standard didn't change since 1994 any code written since then should still be compile- and runnable on modern compilers and runtime implementarions, where there are still a few (see below).
    
 * Basics
-  Let me run through some of the basic features of Common Lisp. Common Lisp also has some unique features that we will be talking about later.
-  
-** function arguments
-   Function arguments are nothing special. Every language knows this. And yet, Common Lisp provides a very sophisticated set of features to structure function parameters.
+  Let me run through some of the basic features of Common Lisp. Those basic features are likely also available in other languages. Common Lisp also has some unique features that I'll be talking about later.
+
+** lists
+   Since the name 'Lisp' is an abbrevation for List Processing we should have a look at lists. Lists are the corner stone of the Lisp language because every Lisp construct is a list.
 
    
+  
+** functions
+   Functions are nothing special. Every language knows them. They are sometimes also known as subroutines or procedures. There are of course fine grained meaning differences but that should be the talk for some other time.
+
+   A simple function (which does nothing) definition looks like this:
+
+   #+BEGIN_SRC lisp
+     (defun my-fun ())
+     (my-fun)
+   #+END_SRC
+
+   #+RESULTS:
+   : NIL
+
+   A function in Common Lisp always returns something, even if not explicitly done. This simple function just returns ~NIL~, which in Common Lisp has two meanings. a) it has a boolean meaning of =false= and b) it means the empty list equal to ~'()~.
+   
+   Common Lisp provides a very sophisticated set of features to structure function parameters.
+
+*** Mantatory parameters
+    Mandatory parameters are simply added to the list construct following the function name. This list construct that represents the parameters is commonly knows as /lambda list/.
+    
+    #+BEGIN_SRC lisp
+      (defun my-fun (arg1 arg2)
+        (list arg1 arg2))
+      (my-fun "Hello" "World")
+    #+END_SRC
+
+    #+RESULTS:
+    | Hello | World |
+    
+*** Optional parameters
+    Optional parameters are defined using the ~&optional~ keyword:
+
+    #+BEGIN_SRC lisp
+      (defun my-fun (arg1 &optional opt1 (opt2 "buzz" opt2-p))
+        (list arg1 opt1 opt2 opt2-p))
+      (list
+       (my-fun "foo")
+       (my-fun "foo" "bar")
+       (my-fun "foo" "bar" "my-buzz"))
+    #+END_SRC
+
+    The first optional =opt1= does not have a default value, so if undefined it'll be ~NIL~. The second optional =opt2= when undefined is populated with the given default value "buzz". The not mandatory ~opt2-p~ predicate indicates whether the =opt2= parameter has been given or not.
+    
+*** Key parameters
+    Key parameters are similar as named parameters in other languages. They can be unordered.
    
 ** lambdas
 ** macros
