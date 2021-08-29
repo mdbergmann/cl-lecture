@@ -84,12 +84,12 @@
     Key parameters are similar as named parameters in other languages. The ordering of =key= parameters is not important and is not enforced. They are defined with a the ~&key~ keyword:
 
     #+BEGIN_SRC lisp
-      (defun my-fun (&key key1 (key2 "Foo" key2-p))
+      (defun my-fun (&key key1 (key2 "bar" key2-p))
         (list key1 key2 key2-p))
       (list
        (my-fun)
-       (my-fun :key1 "Bar")
-       (my-fun :key1 "Bar" :key2 "Buzz"))
+       (my-fun :key1 "foo")
+       (my-fun :key1 "foo" :key2 "buzz"))
     #+END_SRC
 
     #+RESULTS:
