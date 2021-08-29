@@ -1,3 +1,7 @@
+#+AUTHOR: Manfred Bergmann
+#+TITLE: Common Lisp - oldie but goldie
+#+OPTIONS: |:t \n:t
+
 * Intro
   This article should be a brief introduction to Common Lisp. Brief, because Common Lisp is a rather large and complex system. It has many features. I will try to concentrate on the basics and some exceptional features that you likely find nowhere else.
   
@@ -22,9 +26,10 @@
 * Basics
   Let me run through some of the basic features of Common Lisp. Those basic features are likely also available in other languages. Common Lisp also has some unique features that I'll be talking about later.
 
-** lists
-   Since the name 'Lisp' is an abbrevation for List Processing we should have a look at lists. Lists are the corner stone of the Lisp language because every Lisp construct is a list.
+** TODO lists
+   Since the name 'Lisp' is an abbrevation for List Processing we should have a look at lists. Lists are the corner stone of the Lisp language because every Lisp construct is a list also called s-expression.
 
+   
    
   
 ** functions
@@ -68,10 +73,31 @@
        (my-fun "foo" "bar" "my-buzz"))
     #+END_SRC
 
-    The first optional =opt1= does not have a default value, so if undefined it'll be ~NIL~. The second optional =opt2= when undefined is populated with the given default value "buzz". The not mandatory ~opt2-p~ predicate indicates whether the =opt2= parameter has been given or not.
+    #+RESULTS:
+    | foo | NIL | buzz    | NIL |
+    | foo | bar | buzz    | NIL |
+    | foo | bar | my-buzz | T   |
+
+    The first optional =opt1= does not have a default value, so if undefined it'll be ~NIL~. The second optional =opt2= when undefined is populated with the given default value "buzz". The  optional ~opt2-p~ predicate indicates whether the =opt2= parameter has been given or not. Sometimes this is useful in succeeding code.
     
 *** Key parameters
-    Key parameters are similar as named parameters in other languages. They can be unordered.
+    Key parameters are similar as named parameters in other languages. The ordering of =key= parameters is not important and is not enforced. They are defined with a the ~&key~ keyword:
+
+    #+BEGIN_SRC lisp
+      (defun my-fun (&key key1 (key2 "Foo" key2-p))
+        (list key1 key2 key2-p))
+      (list
+       (my-fun)
+       (my-fun :key1 "Bar")
+       (my-fun :key1 "Bar" :key2 "Buzz"))
+    #+END_SRC
+
+    #+RESULTS:
+    | NIL | Foo  | NIL |
+    | Bar | Foo  | NIL |
+    | Bar | Buzz | T   |
+
+    =key= parameters are optional. Similarly as ~&optional~ parameters a default value can be configured and a predicate that indicates whether the parameter was provided or not. Defining =key2-p= is optional.
    
 ** lambdas
 ** macros
