@@ -150,6 +150,10 @@
 
    #+RESULTS:
    | function | bar |
+
+   The "Lambda-calculus" (Alonzo Church, 1930) is mathematical formal system based on variables, function abstractions (lambda expressions) and applying those using substitution. This can be used for any kind of computation and is Turing machine equivalent (or can be used to simulate a Turing machine).
+   So if would would stack/next lambda expression in lambda expression in lambda expression and so on, where a lambda expression is bound to a variable and the computation of this again substitutes a variable, you could have such a lambda-calculus.
+   This is of course not so practical and hard to read but this alone would be enough to calculate anything that is calculatable.
    
 ** macros
 ** packages
