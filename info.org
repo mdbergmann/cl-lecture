@@ -30,8 +30,6 @@
    Since the name 'Lisp' is an abbrevation for List Processing we should have a look at lists. Lists are the corner stone of the Lisp language because every Lisp construct is a list also called s-expression.
 
    
-   
-  
 ** functions
    Functions are nothing special. Every language knows them. They are sometimes also known as subroutines or procedures. There are of course fine grained meaning differences but that should be the talk for some other time.
 
@@ -119,6 +117,40 @@
     As you can see it is possible to mix ~&optional~, ~&key~ and ~&rest~ arguments. However, some care must be taken with mixing optional and key parameters because the key could be taken as a the optional parameters. There are also some quirks with rest and key parameters. You gotta experiment with that.
    
 ** lambdas
+   Lambdas are anonymus functions defined at runtime. Other than that they are similar to =defun=s, regular functions. They can be used in place of a function name like this:
+
+   #+BEGIN_SRC lisp
+     ((lambda (x) x) "foo")
+   #+END_SRC
+
+   #+RESULTS:
+   : foo
+
+   In which case the lambda is immediately evaluated. In other cases, i.e. when a lambda is bound to a variable one need to evaluate the lambda using =funcall=:
+
+   #+BEGIN_SRC lisp
+     (let ((my-fun (lambda (x) x)))
+       (funcall my-fun "foo"))
+   #+END_SRC
+
+   #+RESULTS:
+   : foo
+
+   This is in contrast to Scheme, or other Lisp-1s, where also =my-fun= can be used in place of the function name and would just be evaluated as a function.
+   Common Lisp is a Lisp-2, which means that there are separate environments for variables and functions. In the above example =my-fun= is a variable. In order to evaluate it as a function one one has to use =funcall=.
+
+   Lambdas are first-class objects in Common Lisp which means they can be created at runtime, bound to variables and passed around as function arguments or function results:
+
+   #+BEGIN_SRC lisp
+     (defun my-lambda ()
+       (lambda (y) y))
+     (list (type-of (my-lambda)) 
+           (funcall (my-lambda) "bar"))
+   #+END_SRC
+
+   #+RESULTS:
+   | function | bar |
+   
 ** macros
 ** packages
 ** symbols
