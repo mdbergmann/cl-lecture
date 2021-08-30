@@ -126,7 +126,8 @@
    #+RESULTS:
    : foo
 
-   In which case the lambda is immediately evaluated. In other cases, i.e. when a lambda is bound to a variable one need to evaluate the lambda using =funcall=:
+   In which case the lambda is immediately evaluated. The function 'is applied' on the value "foo", represented as the argument x. The function then returns x.
+   In other cases, i.e. when a lambda is bound to a variable one need to evaluate the lambda using =funcall=:
 
    #+BEGIN_SRC lisp
      (let ((my-fun (lambda (x) x)))
