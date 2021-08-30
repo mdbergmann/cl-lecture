@@ -47,10 +47,10 @@
 
    A function in Common Lisp always returns something, even if not explicitly done. This simple function just returns ~NIL~, which in Common Lisp has two meanings. a) it has a boolean meaning of =false= and b) it means the empty list equal to ~'()~.
    
-   Common Lisp provides a very sophisticated set of features to structure function parameters.
+   Common Lisp provides a very sophisticated set of features to structure function arguments.
 
-*** Mantatory parameters
-    Mandatory parameters are simply added to the list construct following the function name. This list construct that represents the parameters is commonly knows as /lambda list/.
+*** Mantatory arguments
+    Mandatory arguments are simply added to the list construct following the function name. This list construct that represents the arguments is commonly knows as /lambda list/.
     
     #+BEGIN_SRC lisp
       (defun my-fun (arg1 arg2)
@@ -61,8 +61,8 @@
     #+RESULTS:
     | Hello | World |
     
-*** Optional parameters
-    Optional parameters are defined using the ~&optional~ keyword:
+*** Optional arguments
+    Optional arguments are defined using the ~&optional~ keyword:
 
     #+BEGIN_SRC lisp
       (defun my-fun (arg1 &optional opt1 (opt2 "buzz" opt2-p))
@@ -80,8 +80,8 @@
 
     The first optional =opt1= does not have a default value, so if undefined it'll be ~NIL~. The second optional =opt2= when undefined is populated with the given default value "buzz". The  optional ~opt2-p~ predicate indicates whether the =opt2= parameter has been given or not. Sometimes this is useful in succeeding code.
     
-*** Key parameters
-    Key parameters are similar as named parameters in other languages. The ordering of =key= parameters is not important and is not enforced. They are defined with a the ~&key~ keyword:
+*** Key arguments
+    =key= arguments are similar as named arguments in other languages. The ordering of =key= arguments is not important and is not enforced. They are defined with a the ~&key~ keyword:
 
     #+BEGIN_SRC lisp
       (defun my-fun (&key key1 (key2 "bar" key2-p))
@@ -97,7 +97,26 @@
     | Bar | Foo  | NIL |
     | Bar | Buzz | T   |
 
-    =key= parameters are optional. Similarly as ~&optional~ parameters a default value can be configured and a predicate that indicates whether the parameter was provided or not. Defining =key2-p= is optional.
+    =key= arguments are optional. Similarly as ~&optional~ arguments a default value can be configured and a predicate that indicates whether the parameter was provided or not. Defining =key2-p= is optional.
+
+*** Rest arguments
+    =rest= arguments are arguments that have not already been captured by mandatory, optional, or key. So they form a rest. This rest is available in the body as a list. Defined by ~&rest~ keyword. =rest= arguments are sometimes usefull to pass them on to ~apply~ function.
+
+    #+BEGIN_SRC lisp
+      (defun my-fun (arg1 &optional opt1 &rest rest)
+              (list arg1 opt1 rest))
+      (list
+       (my-fun "foo" :rest1 "rest1" :key1 "buzz")
+       (my-fun "foo" "opt1" :rest1 "rest1" :key1 "buzz"))
+    #+END_SRC
+
+    #+RESULTS:
+    | foo | :REST1 | (rest1 :KEY1 buzz)        |
+    | foo | opt1   | (:REST1 rest1 :KEY1 buzz) |
+
+    
+*** Mixing arguments
+    As you can see it is possible to mix ~&optional~, ~&key~ and ~&rest~ arguments. However, some care must be taken with mixing optional and key parameters because the key could be taken as a the optional parameters. There are also some quirks with rest and key parameters. You gotta experiment with that.
    
 ** lambdas
 ** macros
