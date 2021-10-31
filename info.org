@@ -98,7 +98,7 @@
     =key= arguments are optional. Similarly as ~&optional~ arguments a default value can be configured and a predicate that indicates whether the parameter was provided or not. Defining =key2-p= is optional.
 
 *** Rest arguments
-    =rest= arguments are arguments that have not already been captured by mandatory, optional, or key. So they form a rest. This rest is available in the body as a list. Defined by ~&rest~ keyword. =rest= arguments are sometimes usefull to pass them on to ~apply~ function.
+    =rest= arguments are arguments that have not already been captured by mandatory, optional, or key. So they form a rest. This rest is available in the body as a list. Defined by ~rest~ keyword. =rest= arguments are sometimes usefull to pass them on to ~apply~ function.
 
     #+BEGIN_SRC lisp
       (defun my-fun (arg1 &optional opt1 &rest rest)
@@ -114,13 +114,13 @@
 
     
 *** Mixing arguments
-    As you can see it is possible to mix ~&optional~, ~&key~ and ~&rest~ arguments. However, some care must be taken with mixing optional and key parameters because the key could be taken as a the optional parameters. There are also some quirks with rest and key parameters. You gotta experiment with that.
+    As you can see it is possible to mix ~optional~, ~key~ and ~rest~ arguments. However, some care must be taken with mixing =optional= and =key= because the key of the =key= argument could be taken as a the =optional= argument. Similarly with =rest= and =key= arguments as can be seen in the examples above. In most use-cases you'd either have =optional= or =key= together with madatory arguments.
    
 ** lambdas
-   Lambdas are anonymus functions defined at runtime. Other than that they are similar to =defun=s, regular functions. They can be used in place of a function name like this:
+   Lambdas are anonymus functions defined at runtime. Other than that they are similar to =defun=s, regular/named functions. They can be used in place of a function name like this:
 
    #+BEGIN_SRC lisp
-     ((lambda (x) x) "foo")
+     ((lambda (x) x) "foo")  ;; returns "foo"
    #+END_SRC
 
    #+RESULTS:
@@ -152,11 +152,41 @@
    #+RESULTS:
    | function | bar |
 
-   The "Lambda-calculus" (Alonzo Church, 1930) is mathematical formal system based on variables, function abstractions (lambda expressions) and applying those using substitution. This can be used for any kind of computation and is Turing machine equivalent (or can be used to simulate a Turing machine).
-   So if would would stack/next lambda expression in lambda expression in lambda expression and so on, where a lambda expression is bound to a variable and the computation of this again substitutes a variable, you could have such a lambda-calculus.
+   The "Lambda-calculus" (Alonzo Church, 1930) is a mathematical formal system based on variables, function abstractions (lambda expressions) and applying those using substitution. This can be used for any kind of computation and is Turing machine equivalent (or can be used to simulate a Turing machine).
+   So if one would stack/nest lambda expression in lambda expression in lambda expression and so on, where a lambda expression is bound to a variable and the computation of this again substitutes a variable, you could have such a lambda-calculus.
    This is of course not so practical and hard to read but this alone would be enough to calculate anything that is calculatable.
    
 ** macros
+  Macros are an essential part in Common Lisp. One should not confuse Lisp macros with C macros which just do textual replacement. Common Lisp macros are extremely powerful.
+  In short, macros are constructs that generate and/or manipulate code. Lisp macros still stand out in contrast to other languages because Lisp macros just generate and manipulate ordinary Lisp code where as other languages use an AST (Abstract Syntax Tree) representation of the code and hence the macros must deal with the AST. In Lisp, Lisp is the AST.
+
+  Macros could replace many functions where functions are just helper functions. But function can never replace macros. There is a fundamental difference.
+  The arguments to macros are not immediately evaluated but passed to the macro as code. For example let's create a simple =when= replacement:
+
+  #+BEGIN_SRC lisp
+    (defmacro print-when-true (expr print-string)
+      `(when ,expr
+        (print ,print-string)))
+
+    (list (print-when-true (= 1 1) "Foo")
+          (print-when-true (= 1 0) "Foo"))
+  #+END_SRC
+
+  #+RESULTS:
+  | NIL | NIL |
+
+  When using the macro we see that it works correctly. When =expr= is evaluated to =T= then the =body= is evaluated as well.
+  The macro body is just a quoted S-expression (a nested list structure). The =expr= and =body= arguments just represent the lisp forms as given to the macro lambda list. Macros always generate just Lisp code, that's why the result of a macro must use a quoted expression. Quoted expressions are not evaluated. The purpose of the macro is to replace the macro use with the code the macro produces. We can expand the macro to see what it would be replaced with. Let's have a look at this:
+
+  #+BEGIN_SRC
+    CL-USER> (macroexpand-1 '(print-when-true (= 1 1) "Foo"))
+    (WHEN (= 1 1) (PRINT "Foo"))
+    T
+    #+END_SRC
+
+    So everywhere we have this =when-true= expression it'll be replaced with 
+    
+   
 ** packages
 ** symbols
 ** REPL interactivity
