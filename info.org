@@ -158,33 +158,38 @@
    
 ** macros
   Macros are an essential part in Common Lisp. One should not confuse Lisp macros with C macros which just do textual replacement. Common Lisp macros are extremely powerful.
-  In short, macros are constructs that generate and/or manipulate code. Lisp macros still stand out in contrast to other languages because Lisp macros just generate and manipulate ordinary Lisp code where as other languages use an AST (Abstract Syntax Tree) representation of the code and hence the macros must deal with the AST. In Lisp, Lisp is the AST.
+  In short, macros are constructs that generate and/or manipulate code. Lisp macros still stand out in contrast to other languages because Lisp macros just generate and manipulate ordinary Lisp code where as other languages use an AST (Abstract Syntax Tree) representation of the code and hence the macros must deal with the AST. In Lisp, Lisp is the AST. With this Lisp is homoiconic.
 
-  Macros could replace many functions where functions are just helper functions. But function can never replace macros. There is a fundamental difference.
-  The arguments to macros are not immediately evaluated but passed to the macro as code. For example let's create a simple =when= replacement:
+  Macros are not easy to distinguish from functions. In programs one can not see the difference. Many functions where functions are just helper functions could be replaced by macros. But functions can usually not replace macros. There is a fundamental difference between the two.
+  The arguments to macros are not immediately evaluated but passed to the macro as data. For example let's create a simple macro:
 
   #+BEGIN_SRC lisp
-    (defmacro print-when-true (expr print-string)
+    (defmacro print-when-true (expr print-expr)
       `(when ,expr
-        (print ,print-string)))
-
-    (list (print-when-true (= 1 1) "Foo")
-          (print-when-true (= 1 0) "Foo"))
+        (print ,print-expr)))
   #+END_SRC
 
   #+RESULTS:
-  | NIL | NIL |
+  : PRINT-WHEN-TRUE
 
-  When using the macro we see that it works correctly. When =expr= is evaluated to =T= then the =body= is evaluated as well.
-  The macro body is just a quoted S-expression (a nested list structure). The =expr= and =body= arguments just represent the lisp forms as given to the macro lambda list. Macros always generate just Lisp code, that's why the result of a macro must use a quoted expression. Quoted expressions are not evaluated. The purpose of the macro is to replace the macro use with the code the macro produces. We can expand the macro to see what it would be replaced with. Let's have a look at this:
+  When using the macro it prints:
+
+  #+BEGIN_SRC
+    CL-USER> (print-when-true (= 1 0) "Foo")
+    NIL
+    CL-USER> (print-when-true (= 1 1) "Foo")
+    "Foo"
+  #+END_SRC
+
+  The macro evaluates the =expr= expression, and when it is true (=T=) it calls =PRINT= with the given =print-expr=. The =expr= and =print-expr= arguments just represent the lisp forms as given to the macro lambda list. Macros always generate just Lisp code, that's why the result of a macro must use a quoted expression. Quoted expressions are not evaluated, so the macro expression be be replaced with the macro body whereever the macro is used. We can expand the macro to see what it would be replaced with. Let's have a look at this:
 
   #+BEGIN_SRC
     CL-USER> (macroexpand-1 '(print-when-true (= 1 1) "Foo"))
     (WHEN (= 1 1) (PRINT "Foo"))
-    T
-    #+END_SRC
+  #+END_SRC
 
-    So everywhere we have this =when-true= expression it'll be replaced with 
+  So whereever we use the =print-when-true= macro the compiler will replace it with =(WHEN expr (PRINT print-expr))=.
+  
     
    
 ** packages
