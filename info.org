@@ -212,6 +212,20 @@
   Macros are expanded during the 'macro exansion' phase. This phase happens before compilation. So the Lisp compiler already only sees the macro expanded code.
    
 ** packages
+  Packages are constructs to separate and structure functions, macros and variables. =defpackage= declares a new package. =in-package= makes the named package the current package. Any function, macro or variable definitions are then first of all local to that package. Function, macro or variable definitions can be exported, which means that they are then visible for/from other packages. A typical example of a package with some definitions would be:
+
+  #+BEGIN_SRC lisp
+    (defpackage :foo
+      (:use :cl)
+      (:export #:my-fun1
+               #:my-var1))
+    (in-package :foo)
+    (defun my-fun1 () (print "Foofun"))
+    (defparameter my-var1 "Foovar")
+  #+END_SRC
+
+  The definitions of a package are bound to symbols in the package environment (later more about symbols). The function =my-fun1= would be addressed with =foo:my-fun1= from another package when it was exported like above. It is also possible to import package symbols (functions, variables, etc.) by using the =import= or =import-from= functions.
+  
 ** symbols
 ** REPL interactivity
 *** quicklisp
