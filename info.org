@@ -190,7 +190,7 @@
     (IF (= 1 1) (PRINT "Foo"))
   #+END_SRC
 
-  So we see that =my-when= is replaced with an =if= special form. As we said, a quoted expression is not evaluated, so would we use the =expr= argument in the quoted expression we would just get =(IF EXPR ...)=, but we want to =expr= to be expanded here so that the right =if= form is created with what the user defined as the =if= test expression. The =,= 'escapes' the quoted expression and will expand the following form. =,expr= is thus expanded to =(= 1 1)= and =,@body= to =(print "Foo")=. The =@= is special as it unwraps a list of expressions. Since the body of a macro can denote many forms they are wrapped into a list for the =&body= argument and hence have to be unwrapped again on expansion. I.e.:
+  So we see that =my-when= is replaced with an =if= special form. As we said, a quoted expression is not evaluated, so would we use the =expr= argument in the quoted expression we would just get =(IF EXPR ...)=, but we want to =expr= to be expanded here so that the right =if= form is created with what the user defined as the =if= test expression. The =,= 'escapes' the quoted expression and will expand the following form. =,expr= is thus expanded to =(= 1 1)= and =,@body= to =(print "Foo")=. The =@= is special as it unwraps (splices) a list of expressions. Since the body of a macro can denote many forms they are wrapped into a list for the =&body= argument and hence have to be unwrapped again on expansion. I.e.:
 
   #+BEGIN_SRC lisp
     (my-when t
