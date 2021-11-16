@@ -212,21 +212,30 @@
   Macros are expanded during the 'macro exansion' phase. This phase happens before compilation. So the Lisp compiler already only sees the macro expanded code.
    
 ** packages
-  Packages are constructs to separate and structure functions, macros and variables similar like namespaces in other languages. =defpackage= declares a new package. =in-package= makes the named package the current package. Any function, macro or variable definitions are then first of all local to that package where they are defined in. Function, macro or variable definitions can be exported, which means that they are then visible for/from other packages. A typical example of a package with some definitions would be:
+  Packages are constructs to separate and structure data and code similar as in other languages. =defpackage= declares a new package. =in-package= makes the named package the current package. Any function, macro or variable definitions are then first of all local to that package where they are defined in. Function, macro or variable definitions can be exported, which means that they are then visible for/from other packages. A typical example of a package with some definitions would be:
 
   #+BEGIN_SRC lisp
     (defpackage :foo
       (:use :cl)
-      (:export #:my-fun1
-               #:my-var1))
+      (:import-from #:bar
+                    #:bar-fun
+                    #:bar-var)
+      (:export #:my-fun
+               #:my-var))
     (in-package :foo)
-    (defun my-fun1 () (print "Foofun"))
-    (defparameter my-var1 "Foovar")
+
+    (defparameter my-var "Foovar")
+    (defun my-fun () (print "Foofun"))
+    (defun my-internal-fun () (print "Internal"))
   #+END_SRC
 
-  The definitions in a package are bound to symbols in the package environment (later more about symbols). The function =my-fun1= would be addressed with =foo:my-fun1= from another package when it was exported like above. It is also possible to import package symbols (functions, variables, etc.) by using the =import= or =import-from= functions.
+  A package is kind of a lookup table where function names, variable names, etc., represented as symbols (later more on symbols) refer to an object which represents the function, variable, etc. The function =my-fun1= would be refered to using a package qualified name =foo:my-fun1=. The exported 'symbols' are the public interface of the package. Using a double colon one can also refer to internal symbols, like: =foo::my-internal-fun= but that should be done with care.
+  It is also possible to import specific package symbols (functions, variables, etc.) by using the =import= or =import-from= functions. Any package added as parameter of =:use= will be inherited by the defined package and so all exported symbols of the packages mentioned at =:use= will be known and can be used without using the package qualified name.
   
 ** symbols
+  Symbols in Common Lisp represent data and are also data themselves.
+  
+
 ** REPL interactivity
 *** quicklisp
 *** runtime changes
