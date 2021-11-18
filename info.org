@@ -233,9 +233,73 @@
   It is also possible to import specific package symbols (functions, variables, etc.) by using the =import= or =import-from= functions. Any package added as parameter of =:use= will be inherited by the defined package and so all exported symbols of the packages mentioned at =:use= will be known and can be used without using the package qualified name.
   
 ** symbols
-  Symbols in Common Lisp represent data and are also data themselves.
-  
+  Symbols in Common Lisp represent data and are also data themselves. Let's have a look at the structure of symbols. Let's create a symbol from a string. We do this using =INTERN= function.
 
+  #+BEGIN_SRC lisp
+    (intern "foo")
+  #+END_SRC
+
+  #+RESULTS:
+  : |foo|
+
+  Now looking at =*package*= (in Emacs), which always represents the current package (so =INTERN= will create a symbol in there), we'll see:
+
+  #+BEGIN_SRC
+#<PACKAGE #x30004000001D>
+--------------------
+Name: "COMMON-LISP-USER"
+Nick names: "CL-USER"
+Use list: CCL, COMMON-LISP
+Used by list: 
+2 present symbols.
+0 external symbols.
+2 internal symbols.
+1739 inherited symbols.
+0 shadowed symbols.
+  #+END_SRC
+
+  We'll see that there are 2 internal symbols. One of them is our newly created symbol "foo". Let's drill further down to the internal symbols.
+
+  #+BEGIN_SRC
+#<%PACKAGE-SYMBOLS-CONTAINER #x3020014B3FCD>
+--------------------
+All internal symbols of package "COMMON-LISP-USER"
+
+A symbol is considered internal of a package if it's
+present and not external---that is if the package is
+the home package of the symbol, or if the symbol has
+been explicitly imported into the package.
+
+Notice that inherited symbols will thus not be listed,
+which deliberately deviates from the CLHS glossary
+entry of `internal' because it's assumed to be more
+useful this way.
+
+  [Group by classification]
+
+Symbols:                Flags:
+----------------------- --------
+*X*                     b-------
+foo                     --------
+  #+END_SRC
+
+  So our "foo" is listed as symbol. Let's look at symbol "foo" in detail.
+
+  #+BEGIN_SRC
+#<SYMBOL #x3020012F958E>
+--------------------
+Its name is: "foo"
+It is unbound.
+It has no function value.
+It is internal to the package: COMMON-LISP-USER [export] [unintern]
+Property list: NIL
+  #+END_SRC
+
+  Here we see the attributes of symbol "foo". Symbols can be bound to variables, or they can have a function value (Common Lisp is a Lisp-2, which means it separates variables from function names. In a Lisp-1, like Scheme, one cannot have the same name for a variable and function). Our symbol is neither, it's just a plain symbol.
+
+  TODO: bound variables and functions.
+  
+  
 ** REPL interactivity
 *** quicklisp
 *** runtime changes
