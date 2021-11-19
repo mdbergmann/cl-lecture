@@ -359,7 +359,7 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   #+END_SRC
 
 *** The Lisp reader
-  When a Lisp file is read, or some input from the REPL, this is first of all just characters. What the /reader/ reads it turns into objects, symbols, and places those (using =INTERN=) into the current package. It also applies some rules for how the string it has read is converted to the name of a symbol. Usually those rules include turning all characters to uppercase, so a function definition of "foo" creates a symbol of =FOO=. It is possible to have symbol names with literals. We have seen that when we defined the symbol =|foo|=. The reader put vertical bars around "foo" which means the symbol name is literally "foo".
+  When a Lisp file is read, or some input from the REPL, this is first of all just characters. What the /reader/ reads it turns into objects, symbols, and places those (using =INTERN=) into the current package. It also applies some rules for how the string it has read is converted to the name of a symbol. Usually those rules include turning all characters to uppercase, so a function definition of "foo" creates a symbol of =FOO=. It is possible to have symbol names with literals. We have seen that when we defined the symbol =|foo|=. The reader put vertical bars around "foo" which means the symbol name is literally "foo". This is because we have not applied the conversion rules when using =INTERN=. If we had defined the symbol as =(intern "FOO")= we wouldn't see the vertical bars.
   
 ** REPL interactivity
 *** quicklisp
