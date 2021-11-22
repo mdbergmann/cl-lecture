@@ -359,7 +359,20 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   #+END_SRC
 
 *** The Lisp reader
-  When a Lisp file is read, or some input from the REPL, this is first of all just characters. What the /reader/ reads it turns into objects, symbols, and places those (using =INTERN=) into the current package. It also applies some rules for how the string it has read is converted to the name of a symbol. Usually those rules include turning all characters to uppercase, so a function definition of "foo" creates a symbol of =FOO=. It is possible to have symbol names with literals. We have seen that when we defined the symbol =|foo|=. The reader put vertical bars around "foo" which means the symbol name is literally "foo". This is because we have not applied the conversion rules when using =INTERN=. If we had defined the symbol as =(intern "FOO")= we wouldn't see the vertical bars.
+  When a Lisp file is read, or some input from the REPL, it is first of all just a sequence of characters. What the /reader/ reads it turns into objects, symbols, and stores those (using =INTERN=) into the current package. It also applies some rules for how the character sequence is converted to the symbol name. Usually those rules include turning all characters to uppercase. So i.e. a function name "foo" creates a symbol with the name =FOO=.
+  It is possible to have symbol names with literals. We have seen that when we defined the symbol =|foo|= above. The reader puts vertical bars around "foo" which means the symbol name is literally "foo". This is because we have not applied the conversion rules when using =INTERN=. If we had defined the symbol as =(intern "FOO")= we wouldn't see the vertical bars.
+
+  Let's make an example with a function. Say, we are in a package =MY-P= and we define a function:
+
+  #+BEGIN_SRC lisp
+    (defun my-fun () "fun")
+  #+END_SRC
+
+  #+RESULTS:
+  : MY-FUN
+
+  The REPL responds with =MY-FUN=. This is the returned symbol from the function definition that was added to the package. When we now want to execute the function we write: =(my-fun)=. When the reader reads "my-fun", it uses =INTERN= to either create or retrieve the symbol (=INTERN= retrieves the symbol if it already exists). It is retrieved if previously the function was defined with =DEFUN= which also creates a symbol with an attached function object. The attached function object can then be executed.
+  
   
 ** REPL interactivity
 *** quicklisp
