@@ -373,6 +373,34 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
 
   The REPL responds with =MY-FUN=. This is the returned symbol from the function definition that was added to the package. When we now want to execute the function we write: =(my-fun)=. When the reader reads "my-fun", it uses =INTERN= to either create or retrieve the symbol (=INTERN= retrieves the symbol if it already exists). It is retrieved if previously the function was defined with =DEFUN= which also creates a symbol with an attached function object. The attached function object can then be executed.
 
+* Types
+  Even though Common Lisp is not statically typed it has types. In fact everything has a type.
+
+** Everything has a type
+  And there are no primitives as they are in Java.
+
+  #+BEGIN_SRC lisp
+    (list
+     (type-of 5)
+     (type-of "foo")
+     (type-of #\a)
+     (type-of 'foo)
+     (type-of #(1 2 3))
+     (type-of '(1 2 3))
+     (type-of (cons 1 2))
+     (type-of (lambda () "fun"))
+     (type-of (make-condition 'error)))
+  #+END_SRC
+
+  #+RESULTS:
+  | (INTEGER 0 1152921504606846975) | (SIMPLE-BASE-STRING 3) | STANDARD-CHAR | SYMBOL | (SIMPLE-VECTOR 3) | CONS | CONS | FUNCTION | ERROR |
+
+** Create new types
+** Check for types
+*** checktype
+*** typecase
+** SBCL compile type checking
+
 * Error handling
   Common Lisp has some unique error handling properties. The "Restarts". We will see later some examples. For now let's explore the usual stuff that you find in most other languages.
 
@@ -381,14 +409,6 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
 ** handler-case
 ** Restarts
 *** handler-bind
-
-* Types
-** everything has a type
-** create new types
-** check for types
-*** checktype
-*** typecase
-** SBCL compile type checking
 
 ** REPL interactivity
 *** quicklisp
