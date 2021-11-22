@@ -372,8 +372,24 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   : MY-FUN
 
   The REPL responds with =MY-FUN=. This is the returned symbol from the function definition that was added to the package. When we now want to execute the function we write: =(my-fun)=. When the reader reads "my-fun", it uses =INTERN= to either create or retrieve the symbol (=INTERN= retrieves the symbol if it already exists). It is retrieved if previously the function was defined with =DEFUN= which also creates a symbol with an attached function object. The attached function object can then be executed.
-  
-  
+
+* Error handling
+  Common Lisp has some unique error handling properties. The "Restarts". We will see later some examples. For now let's explore the usual stuff that you find in most other languages.
+
+** unwind-protect
+** Conditions
+** handler-case
+** Restarts
+*** handler-bind
+
+* Types
+** everything has a type
+** create new types
+** check for types
+*** checktype
+*** typecase
+** SBCL compile type checking
+
 ** REPL interactivity
 *** quicklisp
 *** runtime changes
@@ -384,25 +400,10 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
 ** REPL driven development
 ** trace, …
 
-* Error handling
-** unwind-protect
-** Conditions
-** handler-case
-** Restarts
-*** handler-bind
-
 * Image based
 ** manipulating data in image
 ** image snapshot
 ** load from image
-
-* Types
-** everything has a type
-** create new types
-** check for types
-*** checktype
-*** typecase
-** SBCL compile type checking
 
 * Multi dispatch
 
