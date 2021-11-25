@@ -452,17 +452,32 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
       (+ n1 n2))
   #+END_SRC
 
-  Do we call this with =(add-10-50-nums 10 11)= we will get a type error raised:
+  Do we call this as =(add-10-50-nums 10 11)= we will get a type error raised:
 
   #+BEGIN_SRC
 The value 10 is not of the expected type 10-50-NUMBER.
    [Condition of type TYPE-ERROR]
   #+END_SRC
 
-*** declaim
-*** typecase
-** SBCL compile type checking
+  Under the hoods =CHECK-TYPE= is a wrapper for =ASSERT= call.
 
+*** declaim
+  With =DECLAIM= one can make declarations for variables or functions. Would we want to make the same type check as with =CHECK-TYPE= we'd have to:
+
+  #+BEGIN_SRC lisp
+    (declaim (ftype (function (10-50-number 10-50-number) 10-50-number) add-10-50-nums))
+    (defun add-10-50-nums (n1 n2)
+      (+ n1 n2))
+  #+END_SRC
+
+  This declares the input and output types of the function =ADD-10-50-nums=. However, this will not be checked at runtime, and whether it will be checked at compile time depends on the Common Lisp implementation. SBCL will check it, CCL don't, in which case it will be useable as documentation only.
+
+  It's not nicely readable though. The library [[https://github.com/ruricolist/serapeum/blob/master/REFERENCE.md#types][Serapeum]] adds some syntactic sugar to make this more nice. I.e. the =DECLAIM= from above can be written as:
+
+  #+BEGIN_SRC lisp
+    (-> add-10-50-nums (10-50-number 10-50-number) 10-50-number)
+  #+END_SRC
+  
 * Error handling
   Common Lisp has some unique error handling properties. The "Restarts". We will see later some examples. For now let's explore the usual stuff that you find in most other languages.
 
