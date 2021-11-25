@@ -5,19 +5,19 @@
 * Intro
   This article should be a brief introduction to Common Lisp. Brief, because Common Lisp is a rather large and complex system. It has many features. I will try to concentrate on the basics and some exceptional features that you likely find nowhere else.
   
-** how did I come to Common Lisp
+** How did I come to Common Lisp
    I have been working with various languages and runtimes since the start oif my career 22 years ago.
    Beginning of 2019 I wanted to fin something else to closely look into that is not JVM based (which I'm mostly been working with since close to 20 years starting with Java 1.1).
    For some reason, which I can't recall, I haven't been really introduced to Lisps, ever. I also can't recall why 2019 I thought that I should take a look at Lisps.
    So I took a look at Clojure first. Clojure is a great language but it was again on the JVM. I wanted something native, or at least some other runtime.
    After some excursions to Erlang, Elixir and Lisp Flavoured Erlang I finally found Common Lisp and didn't regret it.
    
-** brief history
+** Brief history
    First drafts of Common Lisp appeared 1984. While mostly a successor of Maclisp it tried to
    unify and standardize Maclisp and the various other successors of Maclisp.
    In 1994 Common Lisp was an ANSI standard.
    
-** age advantages
+** Age advantages
    Since then the standard hasn't changed. That can of course be seen as a bad thing.
    But actually I believe it is a good thing. It is even today surprisingly 'modern' and has many features of todays languages, partially even more features than 'modern' languages.
    Common Lisp is a quite large and complex package. After this long time there are of course some dusty corners. But all in all it is still very attractive and has an active community.
@@ -26,11 +26,11 @@
 * Basics
   Let me run through some of the basic features of Common Lisp. Those basic features are likely also available in other languages. Common Lisp also has some unique features that I'll be talking about later.
 
-** TODO lists
+** TODO Lists
    Since the name 'Lisp' is an abbrevation for List Processing we should have a look at lists. Lists are the corner stone of the Lisp language because every Lisp construct is a list also called s-expression.
 
    
-** functions
+** Functions
    Functions are nothing special. Every language knows them. They are sometimes also known as subroutines or procedures. There are of course fine grained meaning differences but that should be the talk for some other time.
 
    A simple function (which does nothing) definition looks like this:
@@ -116,7 +116,7 @@
 *** Mixing arguments
     As you can see it is possible to mix ~optional~, ~key~ and ~rest~ arguments. However, some care must be taken with mixing =optional= and =key= because the key of the =key= argument could be taken as a the =optional= argument. Similarly with =rest= and =key= arguments as can be seen in the examples above. In most use-cases you'd either have =optional= or =key= together with madatory arguments.
    
-** lambdas
+** Lambdas
    Lambdas are anonymus functions defined at runtime. Other than that they are similar to =defun=s, regular/named functions. They can be used in place of a function name like this:
 
    #+BEGIN_SRC lisp
@@ -156,7 +156,7 @@
    So if one would stack/nest lambda expression in lambda expression in lambda expression and so on, where a lambda expression is bound to a variable and the computation of this again substitutes a variable, you could have such a lambda-calculus.
    This is of course not so practical and hard to read but this alone would be enough to calculate anything that is calculatable.
    
-** macros
+** Macros
   Macros are an essential part in Common Lisp. One should not confuse Lisp macros with C macros which just do textual replacement. Common Lisp macros are extremely powerful.
   In short, macros are constructs that generate and/or manipulate code. Lisp macros still stand out in contrast to other languages because Lisp macros just generate and manipulate ordinary Lisp code where as other languages use an AST (Abstract Syntax Tree) representation of the code and hence the macros must deal with the AST. In Lisp, Lisp is the AST. With this Lisp is homoiconic.
 
@@ -232,7 +232,7 @@
   A package is kind of a lookup table where function names, variable names, etc., represented as symbols (later more on symbols) refer to an object which represents the function, variable, etc. The function =my-fun1= would be refered to using a package qualified name =foo:my-fun1=. The exported 'symbols' are the public interface of the package. Using a double colon one can also refer to internal symbols, like: =foo::my-internal-fun= but that should be done with care.
   It is also possible to import specific package symbols (functions, variables, etc.) by using the =import= or =import-from= functions. Any package added as parameter of =:use= will be inherited by the defined package and so all exported symbols of the packages mentioned at =:use= will be known and can be used without using the package qualified name.
   
-** symbols
+** Symbols
   Symbols in Common Lisp are almost everywhere. They represent data and are data themselves. When they represent they represent variables or functions. When used as data we can use them as identifiers or as  something like enums or other things.
 
   We can create symbols by just saying ='foo= in the REPL. This will create a symbol with the name "FOO". Notice the uppercase. We also create symbols by using the function =INTERN=.
@@ -396,7 +396,51 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   | (INTEGER 0 1152921504606846975) | (SIMPLE-BASE-STRING 3) | STANDARD-CHAR | SYMBOL | (SIMPLE-VECTOR 3) | CONS | CONS | FUNCTION | ERROR |
 
 ** Create new types
+  New structure types can be created with =defstruct=. =defclass= will create a new class type.
+
+  #+BEGIN_SRC lisp
+    (defstruct address 
+      (street "" :type string)
+      (streetnumber nil :type integer)
+      (plz nil :type integer))
+    (type-of (make-address 
+              :street "my-street"
+              :streetnumber 1
+              :plz 51234))
+  #+END_SRC
+
+  #+RESULTS:
+  : ADDRESS
+
+  The =:type= specified in =defstruct= is optional but when provided the type is checked on creating a new structure.
+  =defclass= can be used as replacement of =defstruct=. If you build object-oriented software and want to work with inheritance then use =defclass=. If also has the feature of updating the class structure at runtime which structures can't do.
+
+  =deftype= allows to create new types as a combination of existing types. Let's create a new type that represents the numbers from 11 to 50.
+
+  #+BEGIN_SRC lisp
+    (defun 10-50-number-p (n)
+      (and (numberp n)
+           (> n 10)
+           (<= n 50)))
+    (deftype 10-50-number ()
+      `(satisfied 10-50-number-p))
+  #+END_SRC
+
+  This snipped creates a predicate function that ensures the number argument is within 10 and 50 (excluding 10 and including 50). The type definition then uses =SATISFIES= with the given predicate function to check the type. So we can then say:
+
+  #+BEGIN_SRC lisp
+    (list
+     (typep 10 '10-50-number)
+     (typep 11 '10-50-number)
+     (typep 50 '10-50-number)
+     (typep 51 '10-50-number))
+  #+END_SRC
+
+  #+RESULTS:
+  | NIL | T | T | NIL |
+
 ** Check for types
+*** declaim
 *** checktype
 *** typecase
 ** SBCL compile type checking
