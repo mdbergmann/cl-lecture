@@ -423,7 +423,7 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
            (> n 10)
            (<= n 50)))
     (deftype 10-50-number ()
-      `(satisfied 10-50-number-p))
+      `(satisfies 10-50-number-p))
   #+END_SRC
 
   This snipped creates a predicate function that ensures the number argument is within 10 and 50 (excluding 10 and including 50). The type definition then uses =SATISFIES= with the given predicate function to check the type. So we can then say:
@@ -440,8 +440,26 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   | NIL | T | T | NIL |
 
 ** Check for types
+  Types can be checked on runtime, or also (partially) on compile time (SBCL has some static type check capability). Checking types usually makes sense for function or macro parameters but can be done anywhere.
+
+*** check-type
+  =CHECK-TYPE= is used to do this. It can be used as follows, considering the =10-50-number= type from above:
+
+  #+BEGIN_SRC lisp
+    (defun add-10-50-nums (n1 n2)
+      (check-type n1 10-50-number)
+      (check-type n2 10-50-number)
+      (+ n1 n2))
+  #+END_SRC
+
+  Do we call this with =(add-10-50-nums 10 11)= we will get a type error raised:
+
+  #+BEGIN_SRC
+The value 10 is not of the expected type 10-50-NUMBER.
+   [Condition of type TYPE-ERROR]
+  #+END_SRC
+
 *** declaim
-*** checktype
 *** typecase
 ** SBCL compile type checking
 
