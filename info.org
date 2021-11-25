@@ -380,6 +380,7 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   And there are no primitives as they are in Java.
 
   #+BEGIN_SRC lisp
+    (defun my-fun ())
     (list
      (type-of 5)
      (type-of "foo")
@@ -389,11 +390,12 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
      (type-of '(1 2 3))
      (type-of (cons 1 2))
      (type-of (lambda () "fun"))
+     (type-of #'my-fun)
      (type-of (make-condition 'error)))
   #+END_SRC
 
   #+RESULTS:
-  | (INTEGER 0 1152921504606846975) | (SIMPLE-BASE-STRING 3) | STANDARD-CHAR | SYMBOL | (SIMPLE-VECTOR 3) | CONS | CONS | FUNCTION | ERROR |
+  | (INTEGER 0 1152921504606846975) | (SIMPLE-BASE-STRING 3) | STANDARD-CHAR | SYMBOL | (SIMPLE-VECTOR 3) | CONS | CONS | FUNCTION | FUNCTION | ERROR |
 
 ** Create new types
   New structure types can be created with =defstruct=. =defclass= will create a new class type.
