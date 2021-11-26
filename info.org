@@ -489,6 +489,7 @@ The value 10 is not of the expected type 10-50-NUMBER.
   #+BEGIN_SRC lisp
     (defun do-stuff ())
     (defun clean-up ())
+    
     (unwind-protect
          (do-stuff)  ;; can raises condition
       (clean-up))
@@ -500,9 +501,11 @@ The value 10 is not of the expected type 10-50-NUMBER.
   For the other error hanling mechanisms we need to know what conditions are.
   
 ** Conditions
-  
+  Conditions are objects of a type =condition=. The CLHS says: "an object which represents a situation". So conditions are far more than errors. Any condition/situation can be transported by conditions. Now while a condition itself can represent a situation like an error, there are multiple ways to raise a condition and multiple ways to handle a condition deoending on the need. For example: an error condition can be just signaled (using =SIGNAL=) in which case nothing much will happen if the condition is not handled at all. =SIGNAL= will just return =NIL= in that case. However, when the condition is raised using =ERROR=, then it must be handled, otherwise the runtime will bring up the debugger. There is also =WARN=, which will print a warning message if the condition is not handled.
 
 ** handler-case
+  =HANDLER-CASE= is a bit more sophisticated than =UNWIND-PROTECT=, it allows to differenciate on the raised condition do different handling.
+
 ** Restarts
 *** handler-bind
 
