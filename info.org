@@ -98,7 +98,7 @@
     =key= arguments are optional. Similarly as ~&optional~ arguments a default value can be configured and a predicate that indicates whether the parameter was provided or not. Defining =key2-p= is optional.
 
 *** Rest arguments
-    =rest= arguments are arguments that have not already been captured by mandatory, optional, or key. So they form a rest. This rest is available in the body as a list. Defined by ~rest~ keyword. =rest= arguments are sometimes usefull to pass them on to ~apply~ function.
+    =rest= arguments are arguments that have not already been captured by mandatory, optional, or key. So they form a rest. This rest is available in the body as a list. Defined by ~rest~ keyword. =rest= arguments are sometimes usefull to pass them on to ~APPLY~ function.
 
     #+BEGIN_SRC lisp
       (defun my-fun (arg1 &optional opt1 &rest rest)
@@ -138,7 +138,7 @@
    : foo
 
    This is in contrast to Scheme, or other Lisp-1s, where also =my-fun= can be used in place of the function name and would just be evaluated as a function.
-   Common Lisp is a Lisp-2, which means that there are separate environments for variables and functions. In the above example =my-fun= is a variable. In order to evaluate it as a function one one has to use =funcall=.
+   Common Lisp is a Lisp-2, which means that there are separate environments for variables and functions. In the above example =my-fun= is a variable. In order to evaluate it as a function one one has to use =FUNCALL=.
 
    Lambdas are first-class objects in Common Lisp which means they can be created at runtime, bound to variables and passed around as function arguments or function results:
 
@@ -211,8 +211,8 @@
 
   Macros are expanded during the 'macro exansion' phase. This phase happens before compilation. So the Lisp compiler already only sees the macro expanded code.
    
-** packages
-  Packages are constructs to separate and structure data and code similar as in other languages. =defpackage= declares a new package. =in-package= makes the named package the current package. Any function, macro or variable definitions are then first of all local to that package where they are defined in. Function, macro or variable definitions can be exported, which means that they are then visible for/from other packages. A typical example of a package with some definitions would be:
+** Packages
+  Packages are constructs to separate and structure data and code similar as in other languages. =DEFPACKAGE= declares a new package. =IN-PACKAGE= makes the named package the current package. Any function, macro or variable definitions are then first of all local to that package where they are defined in. Function, macro or variable definitions can be exported, which means that they are then visible for/from other packages. A typical example of a package with some definitions would be:
 
   #+BEGIN_SRC lisp
     (defpackage :foo
@@ -229,7 +229,7 @@
     (defun my-internal-fun () (print "Internal"))
   #+END_SRC
 
-  A package is kind of a lookup table where function names, variable names, etc., represented as symbols (later more on symbols) refer to an object which represents the function, variable, etc. The function =my-fun1= would be refered to using a package qualified name =foo:my-fun1=. The exported 'symbols' are the public interface of the package. Using a double colon one can also refer to internal symbols, like: =foo::my-internal-fun= but that should be done with care.
+  A package is kind of a lookup table where function names, variable names, etc., represented as symbols (later more on symbols) refer to an object which represents the function, variable, etc. The function =my-fun= would be refered to using a package qualified name =foo:my-fun1=. The exported 'symbols' are the public interface of the package. Using a double colon one can also refer to internal symbols, like: =foo::my-internal-fun= but that should be done with care.
   It is also possible to import specific package symbols (functions, variables, etc.) by using the =import= or =import-from= functions. Any package added as parameter of =:use= will be inherited by the defined package and so all exported symbols of the packages mentioned at =:use= will be known and can be used without using the package qualified name.
   
 ** Symbols
@@ -248,7 +248,7 @@
   #+RESULTS:
   : |foo|
 
-  This symbol =foo= was created in the current package (=*package*=). We can have a look at =*package*= (in Emacs by just evaluating =*package*= and clicking on the result):
+  This symbol =foo= was created in the current package (=*PACKAGE*=). We can have a look at =*PACKAGE*= (in Emacs by just evaluating =*PACKAGE*= and clicking on the result):
 
   #+BEGIN_SRC
 #<PACKAGE #x30004000001D>
@@ -398,7 +398,7 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   | (INTEGER 0 1152921504606846975) | (SIMPLE-BASE-STRING 3) | STANDARD-CHAR | SYMBOL | (SIMPLE-VECTOR 3) | CONS | CONS | FUNCTION | FUNCTION | ERROR |
 
 ** Create new types
-  New structure types can be created with =defstruct=. =defclass= will create a new class type.
+  New structure types can be created with =DEFSTRUCT=. =DEFCLASS= will create a new class type.
 
   #+BEGIN_SRC lisp
     (defstruct address 
@@ -414,8 +414,8 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   #+RESULTS:
   : ADDRESS
 
-  The =:type= specified in =defstruct= is optional but when provided the type is checked on creating a new structure.
-  =defclass= can be used as replacement of =defstruct=. If you build object-oriented software and want to work with inheritance then use =defclass=. If also has the feature of updating the class structure at runtime which structures can't do.
+  The =:type= specified in =DEFSTRUCT= is optional but when provided the type is checked on creating a new structure.
+  =DEFCLASS= can be used as replacement of =defstruct=. If you build object-oriented software and want to work with inheritance then use =DEFCLASS=. If also has the feature of updating the class structure at runtime which structures can't do.
 
   =deftype= allows to create new types as a combination of existing types. Let's create a new type that represents the numbers from 11 to 50.
 
@@ -484,7 +484,24 @@ The value 10 is not of the expected type 10-50-NUMBER.
   Common Lisp has some unique error handling properties. The "Restarts". We will see later some examples. For now let's explore the usual stuff that you find in most other languages.
 
 ** unwind-protect
+  =UNWIND-PROTECT= is similar as a try-finally in other languages, Java for example. It protects the stack from unwinding further by allowing to call a clean-up form.
+
+  #+BEGIN_SRC lisp
+    (defun do-stuff ())
+    (defun clean-up ())
+    (unwind-protect
+         (do-stuff)  ;; can raises condition
+      (clean-up))
+  #+END_SRC
+
+  #+RESULTS:
+  : NIL
+
+  For the other error hanling mechanisms we need to know what conditions are.
+  
 ** Conditions
+  
+
 ** handler-case
 ** Restarts
 *** handler-bind
