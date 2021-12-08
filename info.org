@@ -501,13 +501,86 @@ The value 10 is not of the expected type 10-50-NUMBER.
   For the other error hanling mechanisms we need to know what conditions are.
   
 ** Conditions
-  Conditions are objects of a type =condition=. The CLHS says: "an object which represents a situation". So conditions are far more than errors. Any condition/situation can be transported by conditions. Now while a condition itself can represent a situation like an error, there are multiple ways to raise a condition and multiple ways to handle a condition deoending on the need. For example: an error condition can be just signaled (using =SIGNAL=) in which case nothing much will happen if the condition is not handled at all. =SIGNAL= will just return =NIL= in that case. However, when the condition is raised using =ERROR=, then it must be handled, otherwise the runtime will bring up the debugger. There is also =WARN=, which will print a warning message if the condition is not handled.
+  Conditions are objects of a type =condition=. The CLHS says: "an object which represents a situation". So conditions are far more than errors. Any condition/situation can be transported by conditions. Now while a condition itself can represent a situation like an error, there are multiple ways to raise a condition and multiple ways to handle a condition depending on the need. For example: an error condition can be just signaled (using =SIGNAL=) in which case nothing much will happen if the condition is not handled at all. =SIGNAL= will just return =NIL= in that case. However, when an error condition is raised using =ERROR=, then it must be handled, otherwise the runtime will bring up the debugger. There is also =WARN=, which will print a warning message if the condition is not handled.
 
-** handler-case
-  =HANDLER-CASE= is a bit more sophisticated than =UNWIND-PROTECT=, it allows to differenciate on the raised condition do different handling.
+** Handle error with stack unwind
+  =HANDLER-CASE= is a bit more sophisticated than =UNWIND-PROTECT=, it allows to differenciate on the raised condition and do a different handling. This is comparable to a try-catch-finally (i.e. in Java or elsewhere). This is nothing special really, so let's move on to Restarts.
 
-** Restarts
-*** handler-bind
+** Restarts / Handle error without stack unwind
+  Restarts is a unique feature of Common Lisp that I have not seen elsewhere. It allows to handle conditions wihtout unwinding the stack. If not handled in code the runtime will drop you into the debugger with restart options where the user can choose an available way to continue. Let's make a very simple example to show how it works:
+
+  #+BEGIN_SRC lisp
+    (define-condition my-err1 () ())
+    (define-condition my-err2 () ())
+    (define-condition my-err3 () ())
+    (define-condition my-err4 () ())
+
+    (defun lower (err-cond)
+      (restart-case
+          (error err-cond)
+        (restart-case1 (&optional arg)
+          (format t "restart-case1 arg:~a~%" arg))
+        (restart-case2 (&optional arg)
+          (format t "restart-case2 arg:~a~%" arg))
+        (restart-case3 (&optional arg)
+          (format t "restart-case3 arg:~a~%" arg))))
+
+    (defun higher ()
+      (handler-bind
+          ((my-err1 (lambda (c)
+                      (format t "condition: ~a~%" c)
+                      (invoke-restart 'restart-case1 "foo1")))
+           (my-err2 (lambda (c)
+                      (format t "condition: ~a~%" c)
+                      (invoke-restart 'restart-case2 "foo2")))
+           (my-err3 (lambda (c)
+                      (format t "condition: ~a~%" c)
+                      (invoke-restart 'restart-case3 "foo3"))))
+        (lower 'my-err1)
+        (lower 'my-err2)
+        (lower 'my-err3)
+        (lower 'my-err4)))
+  #+END_SRC
+
+  In the example =HIGHER= calls =LOWER=. =LOWER= immediately raises a condition with =ERROR=. You'd normally of course have some other code here that would raise the conditions instead. To allow the setup of restarts one uses =RESTART-CASE=. This actually looks very similar to a =HANDLER-CASE=. The restart cases can take arguments that can be passed in from a calling module. In our case here the restarts cases just dump a string to stdout.
+  The magic in =HIGHER= to actually 'invoke' the restart targets is achieved with =HANDLER-BIND=. We can differenciate on the condition for which restart we want to invoke. The restart cases are invoked with =INVOKE-RESTART=. This allows to also pass the argument to the restart case handler. If a condition handler is not bound the condition will bubble further up the call chain. So it's possible to bind condition handlers on an even more higher level where one possibly has more oversight to decide which restart to use.
+  Executing =HIGHER= will give the folling output:
+
+  #+BEGIN_SRC
+CL-USER> (higher)
+condition: Condition #<MY-ERR1 #x302001398D9D>
+restart-case1 arg:foo1
+condition: Condition #<MY-ERR2 #x30200139886D>
+restart-case2 arg:foo2
+condition: Condition #<MY-ERR3 #x30200139833D>
+restart-case3 arg:foo3
+  #+END_SRC
+
+  This output is from calling =LOWER= function with condition types =MY-ERR1=, =MY-ERR2= and =MY-ERR3=. When we now call =LOWER= with =MY-ERR4= we will be dropped into the debugger, because there is no condition handler for =MY-ERR4=. But in this case that's exactly what we want. The debugger now offers the three restarts we have set up (plus some standard ones). So we see:
+
+  #+BEGIN_SRC
+Condition #<MY-ERR4 #x302001445A7D>
+   [Condition of type MY-ERR4]
+
+Restarts:
+ 0: [RESTART-CASE1] #<RESTART RESTART-CASE1 #x251B7B8D>
+ 1: [RESTART-CASE2] #<RESTART RESTART-CASE2 #x251B7BDD>
+ 2: [RESTART-CASE3] #<RESTART RESTART-CASE3 #x251B7C2D>
+ 3: [RETRY] Retry SLY mREPL evaluation request.
+ 4: [*ABORT] Return to SLY's top level.
+ 5: [ABORT-BREAK] Reset this thread
+ --more--
+
+Backtrace:
+ 0: (LOWER MY-ERR4)
+ 1: (HIGHER)
+ 2: (CCL::CALL-CHECK-REGS HIGHER)
+ 3: (CCL::CHEAP-EVAL (HIGHER))
+ 4: ((:INTERNAL SLYNK-MREPL::MREPL-EVAL-1))
+ --more--
+  #+END_SRC
+
+  We could now choose one of our restarts manually to have the program continue in a controlled way by maybe retrying some operation with a different set of parameters that were previously used.
 
 ** REPL interactivity
 *** quicklisp
