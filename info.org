@@ -588,6 +588,28 @@ Backtrace:
 Generic functions allow to be overridden. This is driven by providing method (=DEFMETHOD=) definitions which define a certain concrete object types as parameters. Say I have a class Person and have a method definition that works on that object. To override this method I'd have to define a method that works on, say Employee object type, a subclass ob Person. Then it's possible to also call the implementation of the super class using =CALL-NEXT-METHOD=. Though overriding behavior like that is something that one tries to avoid these days. Composition over inheritance is popular. Not without reason. Those very deep inheritance graphs are considered problematic for a few reasons. One is that it's harder to reason about the methods and what they do. The other problem is that inheritance has higher coupling than composition.
 
 * Multi dispatch
+  Multi, or dynamic dispatch is not something that all languages have but it's quite handy. In Common Lisp it's tied to generic functions. Let's have a look:
+
+  #+BEGIN_SRC lisp
+    (defgeneric print-my-object (obj))
+    (defmethod print-my-object ((obj number))
+      (format nil "printing number: ~a~%" obj))
+    (defmethod print-my-object ((obj string))
+      (format nil "printing string: ~a~%" obj))
+    (defmethod print-my-object ((obj keyword))
+      (format nil "printing keyword: ~a~%" obj))
+    (list
+     (print-my-object 5)
+     (print-my-object "foo")
+     (print-my-object :foo))
+  #+END_SRC
+
+  #+RESULTS:
+  | printing number: 5    |
+  | printing string: foo  |
+  | printing keyword: FOO |
+
+  Isn't this cool? This works with any types, of course also objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Basically any types. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
 
 * REPL interactivity
 ** quicklisp
