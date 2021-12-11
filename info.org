@@ -634,7 +634,7 @@ CL-USER> (foo "world")
 "hello world"
   #+END_SRC
 
-  Another thing, but this requires adding something to the source code is =BREAK=. When we have the function:
+  Another thing which I'd like to mention is =BREAK=. =BREAK= enters the debugger when placed in the source code. When we have the function:
 
   #+BEGIN_SRC lisp
     (defun foo (arg)
@@ -665,9 +665,10 @@ Backtrace:
 
   In Sly/Slime the Backtrace elements can be opened and further inspected. This is quite handy sometimes.
   
-* REPL interactivity
-** quicklisp
-** runtime changes
+* Library management with Quicklisp
+  Library management was quite late in Common Lisp. Apache Maven in the Java world existed since 2004 and was probably one of the first of its kind. [[https://www.quicklisp.org/beta/][Quicklisp]] exists since 2010 (as far as I could research). Nowdays remote and local library version management is common and supports even GitHub (or Git) repositories directly as resource URLs. However Quicklisp is still different. While others let you choose arbitrary versions Quicklisp is distribution based. This can be remotely compared with the package management of Linux distributions. It has pros and cons. The pro side is that it's consistent. A library that has other dependencies are all resolved from the distribution. While in Java many speak of the jar-hell. This comes from the fact that you may end up with different dependent versions in your classpath (the first one found by the class-loader wins) when you specify a direct dependency of a library in your project, but some other of your direct dependencies has one of your direct dependecies also as direct dependencies but as a different version. This cannot happen in Quicklisp. But the downside is that it's not easily possible to use higher versions of individual libraries. But there is a solution for this as well called [[https://github.com/fukamachi/qlot][Qlot]].
+
+  One other nice thing about Quicklisp is that you can load libraries directly in the REPL and just use them. So once Quiclload is installed and made available when the REPL starts you can say: =(ql:quickload :cl-gserver)= and it will load the library into the image and it's ready to use. This is a big plus. It makes things extremely simple to just try out some code in the REPL.
 
 * Runtimes/compilers (CCL, SBCL, ECL, ABCL | LispWorks, Allegro)
 
