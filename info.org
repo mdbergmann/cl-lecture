@@ -616,7 +616,7 @@ Generic functions allow to be overridden. This is driven by providing method (=D
   Isn't this cool? This works with objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Well, actually with objects of any type. There is just an implicit type-check happening on the argument. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
 
 * Debugging
-  As a TDD'ler I don't much use the debugging facilities in general, also not in other languages. Because the TDD increments are so small and the feedback is so immediate that I have used a debugger in very rarely in the last years.
+  As a TDD'ler I don't much use the debugging facilities in general, also not in other languages. Because the TDD increments are so small and the feedback is so immediate that I have used a debugger very rarely in the last years.
   However, there are two facilities which I'd like to mention. One I use sometimes: =TRACE=. Trace allows to trace specific functions inputs and outputs. Say we have a function =FOO=:
 
   #+BEGIN_SRC lisp
