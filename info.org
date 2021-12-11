@@ -415,7 +415,7 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
   : ADDRESS
 
   The =:type= specified in =DEFSTRUCT= is optional but when provided the type is checked on creating a new structure.
-  =DEFCLASS= can be used as replacement of =defstruct=. If you build object-oriented software and want to work with inheritance then use =DEFCLASS=. If also has the feature of updating the class structure at runtime which structures can't do.
+  =DEFCLASS= can be used as replacement of =DEFSTRUCT=. If you build object-oriented software and want to work with inheritance then use =DEFCLASS=. If also has the feature of updating the class structure at runtime which structures can't do.
 
   =deftype= allows to create new types as a combination of existing types. Let's create a new type that represents the numbers from 11 to 50.
 
@@ -503,10 +503,10 @@ The value 10 is not of the expected type 10-50-NUMBER.
 ** Conditions
   Conditions are objects of a type =condition=. The CLHS says: "an object which represents a situation". So conditions are far more than errors. Any condition/situation can be transported by conditions. Now while a condition itself can represent a situation like an error, there are multiple ways to raise a condition and multiple ways to handle a condition depending on the need. For example: an error condition can be just signaled (using =SIGNAL=) in which case nothing much will happen if the condition is not handled at all. =SIGNAL= will just return =NIL= in that case. However, when an error condition is raised using =ERROR=, then it must be handled, otherwise the runtime will bring up the debugger. There is also =WARN=, which will print a warning message if the condition is not handled.
 
-** Handle error with stack unwind
+** Handle condition with stack unwind
   =HANDLER-CASE= is a bit more sophisticated than =UNWIND-PROTECT=, it allows to differenciate on the raised condition and do a different handling. This is comparable to a try-catch-finally (i.e. in Java or elsewhere). This is nothing special really, so let's move on to Restarts.
 
-** Restarts / Handle error without stack unwind
+** Restarts / Handle condition without stack unwind
   Restarts is a unique feature of Common Lisp that I have not seen elsewhere. It allows to handle conditions wihtout unwinding the stack. If not handled in code the runtime will drop you into the debugger with restart options where the user can choose an available way to continue. Let's make a very simple example to show how it works:
 
   #+BEGIN_SRC lisp
