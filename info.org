@@ -582,10 +582,10 @@ Backtrace:
 
   We could now choose one of our restarts manually to have the program continue in a controlled way by maybe retrying some operation with a different set of parameters.
 
-* CLOS
+* CLOS and object-oriented programming
   CLOS (Common Lisp Object System) is an object oriented class system or framework in Common Lisp. It has a separate name, but it is part of the Common Lisp standard and part of every Common Lisp runtime. In very basic terms it allows to define classes using =DEFCLASS=. CLOS supports multi-inheritance. The behavior of classes, if something like that exists in Common Lisp - I'd say it doesn't, classes are structures keeping state but don't have behavior as such (and that's a good thing). The behavior to classes is added with generic functions. There is some default behavior to classes, like =INITIALIZE-INSTANCE=, or =PRINT-OBJECT=, etc. which is behavior defined as generic functions. This default behavior of classes is defined by *meta-classes*, classes that define classes. A pretty powerful thing. This would allow me to create my own base class behavior. Comparing this to Java one could very remotely say that this is like creating a new =Object= class that behaves different than the default =Object= class.
   
-Generic functions allow to be overridden. This is driven by providing method (=DEFMETHOD=) definitions which define a certain concrete object types as parameters. Say I have a class Person and have a method definition that works on that object. To override this method I'd have to define a method that works on, say Employee object type, a subclass ob Person. Then it's possible to also call the implementation of the super class using =CALL-NEXT-METHOD=. Though overriding behavior like that is something that one tries to avoid these days. Composition over inheritance is popular. Not without reason. Those very deep inheritance graphs are considered problematic for a few reasons. One is that it's harder to reason about the methods and what they do. The other problem is that inheritance has higher coupling than composition.
+Generic functions allow to be overridden. This is driven by providing method (=DEFMETHOD=) definitions which define certain concrete object types as parameters which are a subclass. Say I have a class Person and have a method definition that works on that object. To override this method I'd have to define a method that works on, say Employee object type, a subclass ob Person. Then it's possible to also call the implementation of the super class using =CALL-NEXT-METHOD= (see chapter 'Multi dispatch'; =float= is a subtype of =number=). Though overriding behavior like that is something that one tries to avoid these days. Composition over inheritance is popular. Not without reason. Those very deep inheritance graphs are considered problematic for a few reasons. One is that it's harder to reason about the methods and what they do. The other problem is that inheritance has higher coupling than composition.
 
 * Multi dispatch
   Multi, or dynamic dispatch is not something that all languages have but it's quite handy. In Common Lisp it's tied to generic functions. Let's have a look:
@@ -596,6 +596,9 @@ Generic functions allow to be overridden. This is driven by providing method (=D
     (defmethod print-my-object ((obj number))
       (format nil "printing number: ~a~%" obj))
 
+    (defmethod print-my-object ((obj float))
+      (format nil "printing float number: ~a, ~a~%" obj (call-next-method)))
+
     (defmethod print-my-object ((obj string))
       (format nil "printing string: ~a~%" obj))
 
@@ -603,15 +606,17 @@ Generic functions allow to be overridden. This is driven by providing method (=D
       (format nil "printing keyword: ~a~%" obj))
 
     (list
-     (print-my-object 5)
      (print-my-object "foo")
-     (print-my-object :foo))
+     (print-my-object :foo)
+     (print-my-object 5)
+     (print-my-object .5))
   #+END_SRC
 
   #+RESULTS:
-  | printing number: 5    |
-  | printing string: foo  |
-  | printing keyword: FOO |
+  | printing string: foo                             |
+  | printing keyword: FOO                            |
+  | printing number: 5                               |
+  | printing float number: 0.5, printing number: 0.5 |
 
   Isn't this cool? This works with objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Well, actually with objects of any type. There is just an implicit type-check happening on the argument. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
 
