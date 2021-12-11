@@ -592,12 +592,16 @@ Generic functions allow to be overridden. This is driven by providing method (=D
 
   #+BEGIN_SRC lisp
     (defgeneric print-my-object (obj))
+
     (defmethod print-my-object ((obj number))
       (format nil "printing number: ~a~%" obj))
+
     (defmethod print-my-object ((obj string))
       (format nil "printing string: ~a~%" obj))
+
     (defmethod print-my-object ((obj keyword))
       (format nil "printing keyword: ~a~%" obj))
+
     (list
      (print-my-object 5)
      (print-my-object "foo")
@@ -609,17 +613,63 @@ Generic functions allow to be overridden. This is driven by providing method (=D
   | printing string: foo  |
   | printing keyword: FOO |
 
-  Isn't this cool? This works with any types, of course also objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Basically any types. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
+  Isn't this cool? This works with objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Well, actually with objects of any type. There is just an implicit type-check happening on the argument. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
 
+* Debugging
+  As a TDD'ler I don't much use the debugging facilities in general, also not in other languages. Because the TDD increments are so small and the feedback is so immediate that I have used a debugger in very rarely in the last years.
+  However, there are two facilities which I'd like to mention. One I use sometimes: =TRACE=. Trace allows to trace specific functions inputs and outputs. Say we have a function =FOO=:
+
+  #+BEGIN_SRC lisp
+    (defun foo (arg)
+      (format nil "hello ~a" arg))
+  #+END_SRC
+
+  We can now enable the tracing of it by saying =(trace foo)=.
+  When we now call =FOO= we'll see:
+
+  #+BEGIN_SRC
+CL-USER> (foo "world")
+0> Calling (FOO "world") 
+<0 FOO returned "hello world"
+"hello world"
+  #+END_SRC
+
+  Another thing, but this requires adding something to the source code is =BREAK=. When we have the function:
+
+  #+BEGIN_SRC lisp
+    (defun foo (arg)
+      (break))
+  #+END_SRC
+
+  and call =FOO= the debugger will open and we can get a glimpse at the stack trace and can inspect the variables.
+
+  #+BEGIN_SRC
+Break
+   [Condition of type SIMPLE-CONDITION]
+
+Restarts:
+ 0: [CONTINUE] Return from BREAK.
+ 1: [RETRY] Retry SLY mREPL evaluation request.
+ 2: [*ABORT] Return to SLY's top level.
+ 3: [ABORT-BREAK] Reset this thread
+ 4: [ABORT] Kill this thread
+
+Backtrace:
+ 0: (FOO "world")
+ 1: ((CCL::TRACED FOO) "world")
+ 2: (CCL::CALL-CHECK-REGS FOO "world")
+ 3: (CCL::CHEAP-EVAL (FOO "world"))
+ 4: ((:INTERNAL SLYNK-MREPL::MREPL-EVAL-1))
+ --more--
+  #+END_SRC
+
+  In Sly/Slime the Backtrace elements can be opened and further inspected. This is quite handy sometimes.
+  
 * REPL interactivity
 ** quicklisp
 ** runtime changes
 
 * Runtimes/compilers (CCL, SBCL, ECL, ABCL | LispWorks, Allegro)
-
-* Debugging
-** REPL driven development
-** trace, …
 
 * Image based
 ** manipulating data in image
