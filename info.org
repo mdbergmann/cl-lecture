@@ -394,8 +394,19 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
      (type-of (make-condition 'error)))
   #+END_SRC
 
-  #+RESULTS:
-  | (INTEGER 0 1152921504606846975) | (SIMPLE-BASE-STRING 3) | STANDARD-CHAR | SYMBOL | (SIMPLE-VECTOR 3) | CONS | CONS | FUNCTION | FUNCTION | ERROR |
+  #+BEGIN_SRC
+  #RESULTS:
+  | (INTEGER 0 1152921504606846975)
+  | (SIMPLE-BASE-STRING 3)
+  | STANDARD-CHAR
+  | SYMBOL
+  | (SIMPLE-VECTOR 3)
+  | CONS
+  | CONS
+  | FUNCTION
+  | FUNCTION
+  | ERROR
+  #+END_SRC
 
 ** Create new types
   New structure types can be created with =DEFSTRUCT=. =DEFCLASS= will create a new class type.
@@ -504,7 +515,7 @@ The value 10 is not of the expected type 10-50-NUMBER.
   Conditions are objects of a type =condition=. The CLHS says: "an object which represents a situation". So conditions are far more than errors. Any condition/situation can be transported by conditions. Now while a condition itself can represent a situation like an error, there are multiple ways to raise a condition and multiple ways to handle a condition depending on the need. For example: an error condition can be just signaled (using =SIGNAL=) in which case nothing much will happen if the condition is not handled at all. =SIGNAL= will just return =NIL= in that case. However, when an error condition is raised using =ERROR=, then it must be handled, otherwise the runtime will bring up the debugger. There is also =WARN=, which will print a warning message if the condition is not handled.
 
 ** Handle condition with stack unwind
-  =HANDLER-CASE= is a bit more sophisticated than =UNWIND-PROTECT=, it allows to differenciate on the raised condition and do a different handling. This is comparable to a try-catch-finally (i.e. in Java or elsewhere). This is nothing special really, so let's move on to Restarts.
+  =HANDLER-CASE= is a bit more sophisticated than =UNWIND-PROTECT=, it allows to differenciate on the raised condition and do a different handling. This is comparable to a try-catch-finally (i.e. in Java qor elsewhere). This is nothing special really, so let's move on to Restarts.
 
 ** Restarts / Handle condition without stack unwind
   Restarts is a unique feature of Common Lisp that I have not seen elsewhere. It allows to handle conditions wihtout unwinding the stack. If not handled in code the runtime will drop you into the debugger with restart options where the user can choose an available way to continue. Let's make a very simple example to show how it works:
@@ -618,7 +629,7 @@ Generic functions allow to be overridden. This is driven by providing method (=D
   | printing number: 5                               |
   | printing float number: 0.5, printing number: 0.5 |
 
-  Isn't this cool? This works with objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Well, actually with objects of any type. There is just an implicit type-check happening on the argument. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
+  Isn't this cool? This works with objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Well, actually with objects of any, including built-in types. There is just an implicit type-check happening on the argument. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
 
 * Debugging
   As a TDD'ler I don't much use the debugging facilities in general, also not in other languages. Because the TDD increments are so small and the feedback is so immediate that I have used a debugger very rarely in the last years.
@@ -676,6 +687,12 @@ Backtrace:
   One other nice thing about Quicklisp is that you can load libraries directly in the REPL and just use them. So once Quiclload is installed and made available when the REPL starts you can say: =(ql:quickload :cl-gserver)= and it will load the library into the image and it's ready to use. This is a big plus. It makes things extremely simple to just try out some code in the REPL.
 
 * Runtimes/compilers (CCL, SBCL, ECL, ABCL | LispWorks, Allegro)
+  Common Lisp is available in quite a few different implementations which all have different features. Historically there were many implementations. Many of them started at universities. Some were and are are open-source implementations, some were commercial implementation but have been open-sourced and some remain commercial. Some are still being maintained, some are not and will only work on older systems.
+  The current most popular one I would say is [[http://www.sbcl.org/][SBCL]]. SBCL is a fork of [[https://cmucl.org/][CMUCL]]. SBCL is fast and can do statical type checks (see above). I use SBCL myself for production. For development I use [[https://ccl.clozure.com/][CCL]]. CCL is not as strict as SBCL, developing with is a bit smoother IMO but can also lead to weird effects sometimes. The compiler is said to be faster than SBCL, whcih I think it true. But the produced code is by far not as fast as SBCLs. CCL comes from a commercial product MCL (Macintosh Common Lisp). In fact I still have a version of MCL on my old PowerMac with MacOS 9 which still runs fine. But MCL is not limited to Apple. It works on Windows and Linux, too.
+  [[https://common-lisp.net/project/ecl/main.htm][ECL]] for Embeddable Common Lisp probably has the largest supported hardware and OS base. There aren't many systems where ECL is not available. Due to the nature of ECL and what it is geared for, namely to be easily embedded in applications, it doesn't work with images (see 'Image based'). It is also quite slow. But it is actively maintained and certainly has it's use-cases.
+  [[https://abcl.org/][ABCL]] started out as scripting engine for a Java editor application. Today it has come a long way and is a full Common Lisp that runs on the JVM. It even implements JSR-223 (the Java scripting API) and has nice but not as good Java interop as Clojure. It is not super fast, but is very robust due to the battle-proven Java runtime system.
+  There are more not so much maintained implementations of Common Lisp, like [[https://clisp.sourceforge.io/][Clisp]], or [[https://www.gnu.org/software/gcl/][GCL]].
+  Then there are the commercial products [[https://franz.com/products/allegrocl/][Allegro CL]] and [[http://www.lispworks.com/index.html][LispWorks]]. Both comes with sophisticated IDEs and many features but are not cheap. Check them out. There are limited, but free editions available. 
 
 * Image based
 ** manipulating data in image
