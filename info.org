@@ -3,14 +3,14 @@
 #+OPTIONS: |:t \n:t
 
 * Intro
-  This article should be a brief introduction to Common Lisp. Brief, because Common Lisp is a rather large and complex system. It has many features. I will try to concentrate on the basics and some exceptional features that you likely find nowhere else.
+  This article should be a brief introduction to Common Lisp. Brief, because Common Lisp is a rather large and complex system. It has many features. I will try to concentrate on the basics and some exceptional features that stand out for me.
   
 ** How did I come to Common Lisp
-   I have been working with various languages and runtimes since the start oif my career 22 years ago.
-   Beginning of 2019 I wanted to fin something else to closely look into that is not JVM based (which I'm mostly been working with since close to 20 years starting with Java 1.1).
+   I have been working with various languages and runtimes since the start of my career 22 years ago.
+   Beginning of 2019 I wanted to find something else to closely look into that is not JVM based (which I'm mostly been working with since close to 20 years starting with Java 1.1).
    For some reason, which I can't recall, I haven't been really introduced to Lisps, ever. I also can't recall why 2019 I thought that I should take a look at Lisps.
    So I took a look at Clojure first. Clojure is a great language but it was again on the JVM. I wanted something native, or at least some other runtime.
-   After some excursions to Erlang, Elixir and Lisp Flavoured Erlang I finally found Common Lisp and didn't regret it.
+   After some excursions to Erlang, Elixir and Lisp Flavoured Erlang (which all three are extremely interesting as well) I finally found Common Lisp and didn't regret it.
    
 ** Brief history
    First drafts of Common Lisp appeared 1984. While mostly a successor of Maclisp it tried to
@@ -19,29 +19,30 @@
    
 ** Age advantages
    Since then the standard hasn't changed. That can of course be seen as a bad thing.
-   But actually I believe it is a good thing. It is even today surprisingly 'modern' and has many features of todays languages, partially even more features than 'modern' languages.
+   But actually I believe it is a good thing. Common Lisp is even today surprisingly 'modern' and has many features of todays languages, partially even more features than 'modern' languages.
    Common Lisp is a quite large and complex package. After this long time there are of course some dusty corners. But all in all it is still very attractive and has an active community.
-   Because the standard didn't change since 1994 any code written since then should still be compile- and runnable on modern compilers and runtime implementarions, where there are still a few (see below).
+   Because the standard didn't change since 1994 any code written since then should still be compile- and runable on modern compilers and runtime implementaions, where there are still a few (see below).
    
 * Basics
-  Let me run through some of the basic features of Common Lisp. Those basic features are likely also available in other languages. Common Lisp also has some unique features that I'll be talking about later.
+  Let me run through some of the basic features of Common Lisp. Those basic features are likely also available in other languages. Common Lisp has some unique features that I'll be talking about later.
 
-** TODO Lists
-   Since the name 'Lisp' is an abbrevation for List Processing we should have a look at lists. Lists are the corner stone of the Lisp language because every Lisp construct is a list also called s-expression.
-
+** Lists
+   Since the name 'Lisp' is an abbrevation for List Processing we should have a quick look at lists. Lists are the corner stone of the Lisp language because every Lisp construct/form is a list also called s-expression. A list is bounded by parentheses =(= and =)=. So =(1 2 3 4)= is a list of the numbers 1, 2, 3 and 4. By convention the first list entry must either be a function name, or a special operator. =if= for example is a special operator. If the first entry is a function, then the other list elements are arguments for that function. Those lists now can be nested. In most cases Lisp programs are trees of lists.
    
 ** Functions
-   Functions are nothing special. Every language knows them. They are sometimes also known as subroutines or procedures. There are of course fine grained meaning differences but that should be the talk for some other time.
+   Functions are nothing special. Every language knows them. They are sometimes also known as subroutines or procedures. There are of course differences but that should be the talk for some other time.
 
-   A simple function (which does nothing) definition looks like this:
+   A simple function definition (which does nothing) looks like this:
 
    #+BEGIN_SRC lisp
      (defun my-fun ())
      (my-fun)
    #+END_SRC
 
-   #+RESULTS:
+   #+BEGIN_SRC 
+   +RESULTS:
    : NIL
+   #+END_SRC
 
    A function in Common Lisp always returns something, even if not explicitly done. This simple function just returns ~NIL~, which in Common Lisp has two meanings. a) it has a boolean meaning of =false= and b) it means the empty list equal to ~'()~.
    
@@ -56,8 +57,10 @@
       (my-fun "Hello" "World")
     #+END_SRC
 
-    #+RESULTS:
+    #+BEGIN_SRC 
+    +RESULTS:
     | Hello | World |
+    #+END_SRC
     
 *** Optional arguments
     Optional arguments are defined using the ~&optional~ keyword:
@@ -71,10 +74,12 @@
        (my-fun "foo" "bar" "my-buzz"))
     #+END_SRC
 
-    #+RESULTS:
+    #+BEGIN_SRC 
+    +RESULTS:
     | foo | NIL | buzz    | NIL |
     | foo | bar | buzz    | NIL |
     | foo | bar | my-buzz | T   |
+    #+END_SRC
 
     The first optional =opt1= does not have a default value, so if undefined it'll be ~NIL~. The second optional =opt2= when undefined is populated with the given default value "buzz". The  optional ~opt2-p~ predicate indicates whether the =opt2= parameter has been given or not. Sometimes this is useful in succeeding code.
     
@@ -90,10 +95,12 @@
        (my-fun :key1 "foo" :key2 "buzz"))
     #+END_SRC
 
-    #+RESULTS:
+    #+BEGIN_SRC 
+    +RESULTS:
     | NIL | Foo  | NIL |
     | Bar | Foo  | NIL |
     | Bar | Buzz | T   |
+    #+END_SRC
 
     =key= arguments are optional. Similarly as ~&optional~ arguments a default value can be configured and a predicate that indicates whether the parameter was provided or not. Defining =key2-p= is optional.
 
@@ -108,10 +115,11 @@
        (my-fun "foo" "opt1" :rest1 "rest1" :key1 "buzz"))
     #+END_SRC
 
-    #+RESULTS:
+    #+BEGIN_SRC 
+    +RESULTS:
     | foo | :REST1 | (rest1 :KEY1 buzz)        |
     | foo | opt1   | (:REST1 rest1 :KEY1 buzz) |
-
+    #+END_SRC
     
 *** Mixing arguments
     As you can see it is possible to mix ~optional~, ~key~ and ~rest~ arguments. However, some care must be taken with mixing =optional= and =key= because the key of the =key= argument could be taken as a the =optional= argument. Similarly with =rest= and =key= arguments as can be seen in the examples above. In most use-cases you'd either have =optional= or =key= together with madatory arguments.
@@ -123,8 +131,10 @@
      ((lambda (x) x) "foo")  ;; returns "foo"
    #+END_SRC
 
-   #+RESULTS:
+   #+BEGIN_SRC 
+   +RESULTS:
    : foo
+   #+END_SRC
 
    In which case the lambda is immediately evaluated. The function 'is applied' on the value "foo", represented as the argument x. The function then returns x.
    In other cases, i.e. when a lambda is bound to a variable one need to evaluate the lambda using =funcall=:
@@ -134,8 +144,10 @@
        (funcall my-fun "foo"))
    #+END_SRC
 
-   #+RESULTS:
+   #+BEGIN_SRC 
+   +RESULTS:
    : foo
+   #+END_SRC
 
    This is in contrast to Scheme, or other Lisp-1s, where also =my-fun= can be used in place of the function name and would just be evaluated as a function.
    Common Lisp is a Lisp-2, which means that there are separate environments for variables and functions. In the above example =my-fun= is a variable. In order to evaluate it as a function one one has to use =FUNCALL=.
@@ -149,8 +161,10 @@
            (funcall (my-lambda) "bar"))
    #+END_SRC
 
-   #+RESULTS:
+   #+BEGIN_SRC 
+   +RESULTS:
    | function | bar |
+   #+END_SRC
 
    The "Lambda-calculus" (Alonzo Church, 1930) is a mathematical formal system based on variables, function abstractions (lambda expressions) and applying those using substitution. This can be used for any kind of computation and is Turing machine equivalent (or can be used to simulate a Turing machine).
    So if one would stack/nest lambda expression in lambda expression in lambda expression and so on, where a lambda expression is bound to a variable and the computation of this again substitutes a variable, you could have such a lambda-calculus.
@@ -168,8 +182,10 @@
       `(if ,expr ,@body))
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   : MY-WHEN
+  #+END_SRC
 
   When using the macro it prints:
 
@@ -245,8 +261,10 @@
     (intern "foo")
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   : |foo|
+  #+END_SRC
 
   This symbol =foo= was created in the current package (=*PACKAGE*=). We can have a look at =*PACKAGE*= (in Emacs by just evaluating =*PACKAGE*= and clicking on the result):
 
@@ -308,8 +326,10 @@ Property list: NIL
     (symbol-name (intern "foo"))
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   : foo
+  #+END_SRC
 
 *** Bound symbols
   Whenever we define a variable, or function we bind a symbol to a variable or function. Let's do this:
@@ -368,8 +388,10 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
     (defun my-fun () "fun")
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   : MY-FUN
+  #+END_SRC
 
   The REPL responds with =MY-FUN=. This is the returned symbol from the function definition that was added to the package. When we now want to execute the function we write: =(my-fun)=. When the reader reads "my-fun", it uses =INTERN= to either create or retrieve the symbol (=INTERN= retrieves the symbol if it already exists). It is retrieved if previously the function was defined with =DEFUN= which also creates a symbol with an attached function object. The attached function object can then be executed.
 
@@ -422,8 +444,10 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
               :plz 51234))
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   : ADDRESS
+  #+END_SRC
 
   The =:type= specified in =DEFSTRUCT= is optional but when provided the type is checked on creating a new structure.
   =DEFCLASS= can be used as replacement of =DEFSTRUCT=. If you build object-oriented software and want to work with inheritance then use =DEFCLASS=. If also has the feature of updating the class structure at runtime which structures can't do.
@@ -449,8 +473,10 @@ It is a function: #<Compiled-function FOO-FUN #x3020014D0A8F> [unbind]
      (typep 51 '10-50-number))
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   | NIL | T | T | NIL |
+  #+END_SRC
 
 ** Check for types
   Types can be checked on runtime, or also (partially) on compile time (SBCL has some static type check capability). Checking types usually makes sense for function or macro parameters but can be done anywhere.
@@ -506,8 +532,10 @@ The value 10 is not of the expected type 10-50-NUMBER.
       (clean-up))
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   : NIL
+  #+END_SRC
 
   For the other error hanling mechanisms we need to know what conditions are.
   
@@ -623,11 +651,13 @@ Generic functions allow to be overridden. This is driven by providing method (=D
      (print-my-object .5))
   #+END_SRC
 
-  #+RESULTS:
+  #+BEGIN_SRC 
+  +RESULTS:
   | printing string: foo                             |
   | printing keyword: FOO                            |
   | printing number: 5                               |
   | printing float number: 0.5, printing number: 0.5 |
+  #+END_SRC
 
   Isn't this cool? This works with objects of classes defined with =DEFCLASS=, or structures defined with =DEFSTRUCT=, even conditions. Well, actually with objects of any, including built-in types. There is just an implicit type-check happening on the argument. But there is a certain performance downside. The runtime has to check which function to call by comparing the types on runtime.
 
