@@ -695,9 +695,21 @@ Backtrace:
   Then there are the commercial products [[https://franz.com/products/allegrocl/][Allegro CL]] and [[http://www.lispworks.com/index.html][LispWorks]]. Both comes with sophisticated IDEs and many features but are not cheap. Check them out. There are limited, but free editions available. 
 
 * Image based
-** manipulating data in image
+  Common Lisp is (usually) an image based system. The only other image based system that I know is SmallTalk. I haven't seen that in younger languages and runtimes. What is it? When you start a Common Lisp system, usually the REPL, then everything you do, like creating variables and functions, etc. is manipulating state in the runtime memory. So far this is not different to other runtimes. What you do during your REPL session is just manipulating data in some memory area. The difference is that Common Lisp allows to create a snapshot (an image) of that runtime memory with all its state and store it to disk. Then it's possible to run the REPL and load that image and all state is recovered, you could even reconnect to servers and reopen files and so on. The REPL allows to load even multiple applications, because all is just variables and functions structured in packages. So you can make ready images to have a head start when starting to work. In many cases all Common Lisps start with an image, it's just an empty one.
+
 ** image snapshot
+  To give this a quick run, create a variable like this: =(defparameter *foo* "Hello World")=. Now save the image like this in CCL =(ccl:save-application filename)= (may be different on other implementations).
+
 ** load from image
+  To load the image you start CCL with -I, like =ccl -I foo-ccl.image=.
+  Then dump your variable =*foo*= and you'll see "Hello World".
 
 * Functional programming
-** blog entry about functional programming
+  If you are interested in functional programming with Common Lisp then I'd want to redirct you to my [[/blog/Functional+Programming+in+(Common)+Lisp][blog post]] on it.
+
+* Resources
+  Much of the information in here is either from my own experience or mentioned and linked web pages but also books like:
+
+  - [[https://gigamonkeys.com/book/][Practical Common Lisp]]
+  - [[https://lispcookbook.github.io/cl-cookbook/][Common Lisp Cookbook]]
+  - [[http://www.lispworks.com/documentation/HyperSpec/Front/Help.htm][Common Lisp Hyper Spec]]
